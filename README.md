@@ -47,6 +47,18 @@ streamlit run .\app\streamlit_app.py
 - Without a key: set `USE_OLLAMA=1` for local Ollama, or leave both off for **no-LLM** (evidence-only) mode.
 - All app data is stored locally under `.data/`.
 
+### Deploy on Streamlit Community Cloud
+1. Push the repo to GitHub, then go to [share.streamlit.io](https://share.streamlit.io) → New app → pick repo, branch `main`, main file `app/streamlit_app.py`.
+2. In **Advanced settings → Secrets**, paste (use your real key):
+   ```toml
+   OPENAI_API_KEY = "sk-your-key-here"
+   OPENAI_MODEL = "gpt-4o-mini"
+   OPENAI_EMBED_MODEL = "text-embedding-3-small"
+   USE_OLLAMA = "0"
+   DATA_DIR = ".data"
+   ```
+   The app reads these and uses them as environment variables so the LLM and embeddings work in the cloud.
+
 ### Libraries, APIs, and services used
 - **Python libraries**:
   - `streamlit`: web UI.

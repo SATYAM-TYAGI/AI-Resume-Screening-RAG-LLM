@@ -138,8 +138,27 @@ def _chat_tab(rag: RAGService) -> None:
         st.session_state.chat.append({"role": "assistant", "content": answer})
 
 
+def _inject_streamlit_secrets() -> None:
+    """Copy Streamlit Cloud secrets into os.environ so RAG/LLM code sees them."""
+    try:
+        for key, value in st.secrets.items():
+            if key in os.environ:
+                continue
+            if isinstance(value, dict):
+                # e.g. [openai] api_key = "sk-..." -> OPENAI_API_KEY
+                for sub_key, sub_value in value.items():
+                    if sub_value is not None:
+                        env_name = f"{key.upper()}_{sub_key.upper()}" if key else sub_key.upper()
+                        os.environ[env_name] = str(sub_value)
+            elif value is not None:
+                os.environ[key] = str(value)
+    except Exception:
+        pass
+
+
 def main() -> None:
     load_dotenv()
+    _inject_streamlit_secrets()
 
     st.set_page_config(page_title="AI Resume Screener", layout="wide")
     st.title("AI Resume Screener (RAG + LLM)")
